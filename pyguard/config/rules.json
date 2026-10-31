@@ -1,0 +1,176 @@
+{
+  "description": "PyGuard firewall rules - dynamically reloadable without restart",
+  "default_policy": "allow",
+  "rules": [
+    {
+      "id": "block_blacklisted_ip",
+      "action": "block",
+      "enabled": true,
+      "description": "Block all traffic from blacklisted IP",
+      "source_ip": "192.168.1.100",
+      "dst_ip": null,
+      "src_port": null,
+      "dst_port": null,
+      "protocol": null,
+      "max_packets_per_second": null
+    },
+    {
+      "id": "block_telnet",
+      "action": "block",
+      "enabled": true,
+      "description": "Block Telnet (insecure remote access)",
+      "source_ip": null,
+      "dst_ip": null,
+      "src_port": null,
+      "dst_port": [
+        23
+      ],
+      "protocol": "tcp",
+      "max_packets_per_second": null
+    },
+    {
+      "id": "allow_http_https",
+      "action": "allow",
+      "enabled": true,
+      "description": "Allow HTTP and HTTPS web traffic",
+      "source_ip": null,
+      "dst_ip": null,
+      "src_port": null,
+      "dst_port": [
+        80,
+        443
+      ],
+      "protocol": "tcp",
+      "max_packets_per_second": null
+    },
+    {
+      "id": "block_ftp",
+      "action": "block",
+      "enabled": true,
+      "description": "Block FTP (unencrypted file transfer)",
+      "source_ip": null,
+      "dst_ip": null,
+      "src_port": null,
+      "dst_port": [
+        20,
+        21
+      ],
+      "protocol": "tcp",
+      "max_packets_per_second": null
+    },
+    {
+      "id": "allow_dns",
+      "action": "allow",
+      "enabled": true,
+      "description": "Allow DNS queries",
+      "source_ip": null,
+      "dst_ip": null,
+      "src_port": null,
+      "dst_port": [
+        53
+      ],
+      "protocol": "udp",
+      "max_packets_per_second": null
+    },
+    {
+      "id": "block_dns_tcp",
+      "action": "block",
+      "enabled": true,
+      "description": "Block DNS over TCP (only allow UDP DNS)",
+      "source_ip": null,
+      "dst_ip": null,
+      "src_port": null,
+      "dst_port": [
+        53
+      ],
+      "protocol": "tcp",
+      "max_packets_per_second": null
+    },
+    {
+      "id": "block_rdp",
+      "action": "block",
+      "enabled": true,
+      "description": "Block Remote Desktop Protocol from external sources",
+      "source_ip": null,
+      "dst_ip": null,
+      "src_port": null,
+      "dst_port": [
+        3389
+      ],
+      "protocol": "tcp",
+      "max_packets_per_second": null
+    },
+    {
+      "id": "allow_ssh",
+      "action": "allow",
+      "enabled": true,
+      "description": "Allow SSH connections (secure remote access)",
+      "source_ip": null,
+      "dst_ip": null,
+      "src_port": null,
+      "dst_port": [
+        22
+      ],
+      "protocol": "tcp",
+      "max_packets_per_second": null
+    },
+    {
+      "id": "block_smb",
+      "action": "block",
+      "enabled": true,
+      "description": "Block SMB/Windows file sharing (WannaCry attack vector)",
+      "source_ip": null,
+      "dst_ip": null,
+      "src_port": null,
+      "dst_port": [
+        445,
+        139
+      ],
+      "protocol": "tcp",
+      "max_packets_per_second": null
+    },
+    {
+      "id": "rate_limit_icmp",
+      "action": "rate_limit",
+      "enabled": true,
+      "description": "Rate limit ICMP to prevent ping flood attacks",
+      "source_ip": null,
+      "dst_ip": null,
+      "src_port": null,
+      "dst_port": null,
+      "protocol": "icmp",
+      "max_packets_per_second": 30
+    },
+    {
+      "id": "block_suspicious_subnet",
+      "action": "block",
+      "enabled": true,
+      "description": "Block traffic from known malicious subnet",
+      "source_ip": "10.0.0.1",
+      "dst_ip": null,
+      "src_port": null,
+      "dst_port": null,
+      "protocol": null,
+      "max_packets_per_second": null
+    },
+    {
+      "id": "rate_limit_global",
+      "action": "rate_limit",
+      "enabled": true,
+      "description": "Global rate limit per source IP",
+      "source_ip": null,
+      "dst_ip": null,
+      "src_port": null,
+      "dst_port": null,
+      "protocol": null,
+      "max_packets_per_second": 100
+    }
+  ],
+  "rate_limits": {
+    "global_max_pps": 1000,
+    "per_ip_max_pps": 100,
+    "port_scan_threshold": 10,
+    "brute_force_threshold": 5,
+    "flood_threshold_pps": 500
+  }
+}

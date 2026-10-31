@@ -1,0 +1,16 @@
+/* Shared PyGuard palette and type used by the public site and dashboard. */
+:root {
+  --pyguard-paper: #faf8f2;
+  --pyguard-ink: #20201e;
+  --pyguard-muted: #66645e;
+  --pyguard-charcoal: #171715;
+  --pyguard-elevated: #22221f;
+  --pyguard-border: rgba(32, 32, 30, .13);
+  --pyguard-teal: #167d78;
+  --pyguard-lime: #c8f169;
+  --pyguard-amber: #d97706;
+  --pyguard-danger: #b42318;
+  --pyguard-white: #fff;
+  --pyguard-display: 'Manrope', Arial, sans-serif;
+  --pyguard-body: 'DM Sans', Arial, sans-serif;
+}

@@ -1,0 +1,15 @@
+# PyGuard - Python Based Intelligent Firewall
+# Packet capturing and network analysis
+scapy>=2.5.0
+
+# CLI interface
+click>=8.0.0
+
+# Web dashboard
+flask>=3.0.0
+
+# HTTP requests for Geo-location API
+requests>=2.31.0
+
+# Optional: for Windows raw socket support (admin may be required)
+# No additional deps for basic operation; Scapy uses libpcap/Npcap on Windows

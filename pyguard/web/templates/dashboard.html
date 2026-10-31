@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyGuard – Intelligent Firewall Dashboard</title>
+    <meta name="description"
+        content="PyGuard web dashboard for managing firewall rules, monitoring traffic, and running attack simulations.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-polish.css') }}">
+</head>
+
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+            </div>
+            <span class="brand-text">PyGuard</span>
+        </div>
+        <nav class="sidebar-nav">
+            <button class="nav-item active" data-tab="dashboard" id="nav-dashboard">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="9" />
+                    <rect x="14" y="3" width="7" height="5" />
+                    <rect x="14" y="12" width="7" height="9" />
+                    <rect x="3" y="16" width="7" height="5" />
+                </svg>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-item" data-tab="rules" id="nav-rules">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                </svg>
+                <span>Rules</span>
+            </button>
+            <button class="nav-item" data-tab="simulator" id="nav-simulator">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+                <span>Simulator</span>
+            </button>
+            <button class="nav-item" data-tab="logs" id="nav-logs">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                <span>Logs</span>
+            </button>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="status-badge" id="sidebar-status">
+                <span class="status-dot offline"></span>
+                <span>Offline</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="header-title" id="page-title">Dashboard</h1>
+            <div class="header-actions">
+                <a class="public-home-link" href="{{ url_for('home') }}">PyGuard home <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
+                <div class="firewall-toggle" id="firewall-toggle">
+                    <span class="toggle-label" id="toggle-label">Checking monitoring status…</span>
+                    <button class="toggle-switch" id="toggle-switch" type="button" role="switch" aria-label="Packet monitoring" aria-busy="true" disabled>
+                        <span class="toggle-knob"></span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Tab -->
+        <section class="tab-content active" id="tab-dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon status-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Status</span>
+                        <span class="stat-value" id="stat-status">Offline</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon rules-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Active Rules</span>
+                        <span class="stat-value" id="stat-rules">0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon scapy-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-label">Scapy</span>
+                        <span class="stat-value" id="stat-scapy">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card live-feed-card">
+                <div class="card-header">
+                    <h2>Live Activity Feed</h2>
+                    <div class="live-badge">
+                        <span class="live-dot"></span>
+                        LIVE
+                    </div>
+                </div>
+                <div class="log-stream" id="live-log-stream">
+                    <div class="log-empty">No activity yet. Start the firewall to see live events.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rules Tab -->
+        <section class="tab-content" id="tab-rules">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Add New Rule</h2>
+                </div>
+                <form class="rule-form" id="add-rule-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="rule-id">Rule ID *</label>
+                            <input type="text" id="rule-id" placeholder="e.g. block-ssh" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rule-action">Action</label>
+                            <select id="rule-action">
+                                <option value="block">Block</option>
+                                <option value="allow">Allow</option>
+                                <option value="rate_limit">Rate Limit</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rule-source-ip">Source IP</label>
+                            <input type="text" id="rule-source-ip" placeholder="e.g. 10.0.0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="rule-dst-ip">Destination IP</label>
+                            <input type="text" id="rule-dst-ip" placeholder="e.g. 192.168.1.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="rule-dst-port">Destination Port</label>
+                            <input type="number" id="rule-dst-port" placeholder="e.g. 22" min="0" max="65535">
+                        </div>
+                        <div class="form-group">
+                            <label for="rule-protocol">Protocol</label>
+                            <select id="rule-protocol">
+                                <option value="">Any</option>
+                                <option value="tcp">TCP</option>
+                                <option value="udp">UDP</option>
+                                <option value="icmp">ICMP</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rule-max-pps">Max PPS (rate limit)</label>
+                            <input type="number" id="rule-max-pps" placeholder="e.g. 50" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="rule-description">Description</label>
+                            <input type="text" id="rule-description" placeholder="Rule description">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="btn-add-rule">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Add Rule
+                    </button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Firewall Rules</h2>
+                    <button class="btn btn-ghost" id="btn-refresh-rules">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10" />
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+                <div class="table-wrap">
+                    <table class="rules-table" id="rules-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Action</th>
+                                <th>Source IP</th>
+                                <th>Dest IP</th>
+                                <th>Port</th>
+                                <th>Protocol</th>
+                                <th>Description</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="rules-tbody">
+                            <tr>
+                                <td colspan="8" class="table-empty">Loading rules...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card blocked-countries-card">
+                <div class="card-header">
+                    <h2 class="icon-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"/></svg>Blocked Countries</h2>
+                </div>
+                <div class="country-block-form">
+                    <div class="form-group">
+                        <label for="geo-country-select">Select Country to Block</label>
+                        <select id="geo-country-select">
+                            <option value="">Loading countries...</option>
+                        </select>
+                    </div>
+                    <div class="form-group country-block-action">
+                        <button class="btn btn-primary country-block-button" id="btn-block-country" type="button">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>
+                            </svg>
+                            Block Country
+                        </button>
+                    </div>
+                </div>
+                <div id="blocked-countries-container" class="blocked-countries-container">
+                    <div class="table-empty country-empty"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"/></svg><span>No countries currently blocked.</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Simulator Tab -->
+        <section class="tab-content" id="tab-simulator">
+            <!-- Rule Tester Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="icon-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>Rule Tester</h2>
+                    <div style="display:flex; gap: 10px; align-items:center;">
+                        <button class="btn btn-accent" id="btn-test-all-rules" type="button" onclick="testAllRules()">
+                            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="6 3 20 12 6 21 6 3" />
+                            </svg>
+                            Test All Rules
+                        </button>
+                        <button class="btn btn-ghost" id="btn-reload-test-rules" onclick="loadTestableRules()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="23 4 23 10 17 10" />
+                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                            </svg>
+                            Reload
+                        </button>
+                    </div>
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.9rem;">
+                    Simulate traffic matching each firewall rule and verify the firewall's response. Click
+                    <strong>Test</strong> on any rule or <strong>Test All</strong> to validate every rule at once.
+                </p>
+                <div class="rule-test-grid" id="rule-test-grid">
+                    <div class="log-empty">Loading rules...</div>
+                </div>
+            </div>
+
+            <!-- Custom Packet Tester -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="icon-heading"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Custom Packet Tester</h2>
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.9rem;">
+                    Manually craft a packet and test it against all firewall rules to see how the firewall would
+                    respond.
+                </p>
+                <form class="form-grid packet-test-grid" id="custom-packet-form" onsubmit="testCustomPacket(event)">
+                    <div class="form-group">
+                        <label for="cp-src-ip">Source IP</label>
+                        <input type="text" id="cp-src-ip" placeholder="e.g. 192.168.1.100" value="203.0.113.50">
+                    </div>
+                    <div class="form-group">
+                        <label for="cp-dst-ip">Destination IP</label>
+                        <input type="text" id="cp-dst-ip" placeholder="e.g. 10.0.0.5" value="192.168.1.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="cp-src-port">Source Port</label>
+                        <input type="number" id="cp-src-port" placeholder="e.g. 54321" min="0" max="65535">
+                    </div>
+                    <div class="form-group">
+                        <label for="cp-dst-port">Destination Port</label>
+                        <input type="number" id="cp-dst-port" placeholder="e.g. 22" min="0" max="65535">
+                    </div>
+                    <div class="form-group">
+                        <label for="cp-protocol">Protocol</label>
+                        <select id="cp-protocol">
+                            <option value="tcp">TCP</option>
+                            <option value="udp">UDP</option>
+                            <option value="icmp">ICMP</option>
+                        </select>
+                    </div>
+                    <div class="form-group max-pps-field">
+                        <label for="cp-max-pps">Max PPS (rate limit)</label>
+                        <input type="number" id="cp-max-pps" placeholder="e.g. 50" min="1">
+                    </div>
+                    <div class="form-group form-action-field">
+                        <button type="submit" class="btn btn-primary test-packet-button">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="6 3 20 12 6 21 6 3" />
+                            </svg>
+                            Test Packet
+                        </button>
+                    </div>
+                </form>
+                <div class="sim-result" id="custom-packet-result"></div>
+            </div>
+        </section>
+
+        <!-- Logs Tab -->
+        <section class="tab-content" id="tab-logs">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Log Viewer</h2>
+                    <div class="log-controls">
+                        <label class="sr-only" for="log-search">Search logs</label>
+                        <input type="search" class="log-search" id="log-search" placeholder="Search logs...">
+                        <label class="sr-only" for="log-severity-filter">Filter log events</label>
+                        <select id="log-severity-filter" aria-label="Filter log events">
+                            <option value="">All Events</option>
+                            <option value="blocked">Blocked</option>
+                            <option value="allowed">Allowed</option>
+                            <option value="rate_limited">Rate Limited</option>
+                            <option value="suspicious">Suspicious</option>
+                            <option value="alert">Alerts</option>
+                            <option value="simulation">Simulations</option>
+                            <option value="info">Info</option>
+                        </select>
+                        <button class="btn btn-ghost" id="btn-refresh-logs" type="button" aria-controls="log-viewer">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="23 4 23 10 17 10" />
+                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                            </svg>
+                            <span class="refresh-label">Refresh</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="log-viewer" id="log-viewer">
+                    <div class="log-empty">No logs found. Run the firewall or a simulation to generate log entries.
+                    </div>
+                </div>
+                <p class="log-request-status" id="log-request-status" aria-live="polite" role="status"></p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+.button-lime:hover {
+  background: var(--lime);
+  filter: brightness(.97);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(32, 32, 30, .12);
+}
+.button-lime:active {
+  filter: brightness(.93);
+  transform: translateY(0);
+  box-shadow: 0 2px 7px rgba(32, 32, 30, .1);
+}
+.button-lime:focus-visible { outline: 3px solid var(--teal); outline-offset: 4px; }
+
+/* Keep the dark header CTA legible against the site-wide navigation hover rule. */
+.primary-nav > .nav-cta {
+  color: #fff;
+  transition: background-color .2s, box-shadow .2s, transform .2s;
+}
+.primary-nav > .nav-cta:hover,
+.primary-nav > .nav-cta:focus-visible {
+  color: #fff;
+  background: #171715;
+  box-shadow: 0 6px 16px rgba(32, 32, 30, .16);
+  transform: translateY(-1px);
+}
+.primary-nav > .nav-cta span { transition: transform .2s; }
+.primary-nav > .nav-cta:hover span { transform: translate(2px, -2px); }
